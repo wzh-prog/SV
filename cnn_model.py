@@ -133,7 +133,7 @@ class Bottleneck(nn.Module):
         return out
 
 
-from torchvision.utils import _log_api_usage_once
+
 class ResNet(nn.Module):
     def __init__(
         self,
@@ -147,7 +147,7 @@ class ResNet(nn.Module):
         norm_layer: Optional[Callable[..., nn.Module]] = None,
     ) -> None:
         super().__init__()
-        _log_api_usage_once(self)
+        # _log_api_usage_once(self)
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
@@ -275,6 +275,12 @@ def _resnet(
 
     return model
 
+
 def resnet18() -> ResNet:
-    weights = torch.load("./model_pth/resnet18-f37072fd.pth")
+    weights = torch.load("model/resnet18-f37072fd.pth")
     return _resnet(BasicBlock, [2, 2, 2, 2], weights=weights)
+
+
+def resnet50() -> ResNet:
+    weights = torch.load("model/resnet50-0676ba61.pth")
+    return _resnet(Bottleneck, [3, 4, 6, 3], weights=weights)
