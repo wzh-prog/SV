@@ -255,12 +255,7 @@ def main(args):
     )
 
     print("Creating model")
-    model = torchvision.models.get_model(args.model, weights=args.weights)
-
-    from torchvision.models.video import r3d_18, R3D_18_Weights
-    weights = R3D_18_Weights.DEFAULT
-    model = r3d_18(weights=weights)  # 预训练权重是在 Kinetics-400 上训练的
-    
+    model = torchvision.models.get_model("r2plus1d_18", weights="KINETICS400_V1")
     model.to(device)
     if args.distributed and args.sync_bn:
         model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
