@@ -255,7 +255,8 @@ def main(args):
     )
 
     print("Creating model")
-    model = torchvision.models.get_model("r2plus1d_18", weights="KINETICS400_V1")
+    model = torchvision.models.get_model("r3d_18", weights="KINETICS400_V1")
+    model.fc = nn.Linear(512,51)
     model.to(device)
     if args.distributed and args.sync_bn:
         model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
