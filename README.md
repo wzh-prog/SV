@@ -16,3 +16,8 @@ ViT代码已经梳理进来，但是还需要修改其encoder部分，不然没�
 torch                     2.0.0+cu117
 torchaudio                2.0.1+cu117
 torchvision               0.15.1+cu117
+
+
+提取 视频帧 
+https://www.baeldung.com/linux/ffmpeg-extract-video-frames
+
