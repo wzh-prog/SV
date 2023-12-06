@@ -15,9 +15,8 @@ class FKSV(VisionDataset):
         root: str,
         jsonFile: str,
         frames_per_clip: int,
-
-
         step_between_clips: int = 1,
+
         frame_rate: Optional[int] = None,
         train: bool = True,
         transform: Optional[Callable] = None,
@@ -38,7 +37,11 @@ class FKSV(VisionDataset):
             events_to_idx
         )
 
+        self.samples = self.samples[:64]
+
+
         video_paths = [os.path.join(self.root, path) for (path, _, _) in self.samples]
+        print("total videos: ", len(video_paths))
         video_clips = VideoClips(
             video_paths,
             frames_per_clip,
@@ -70,14 +73,14 @@ class FKSV(VisionDataset):
         return self.video_clips.num_clips()
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor, int]:
-        video, audio, _, video_idx = self.video_clips.get_clip(idx)
+        video, audio, _av_info, video_idx = self.video_clips.get_clip(idx)
         sample_index = self.indices[video_idx]
         _, ann_, event_idx = self.samples[sample_index]
 
         if self.transform is not None:
             video = self.transform(video)
 
-        return video, audio, ann_, event_idx
+        return video, audio, _av_info, ann_, event_idx
 
 import json
 def find_enents(jsonFile: str):
@@ -115,14 +118,14 @@ def get_samples(
 
     instances = []
     
-    # ann = {"假": 0, "真": 1, "辟谣": 2}
-    ann = {1: 0, 2: 1, 0: 2}
+    ann = {"假": 0, "真": 1, "辟谣": 2}
+    # ann = {1: 0, 2: 1, 0: 2}
 
     for item_ in data:
-        videoPath = item_["video_id"]
+        videoPath = item_["video_id"] + ".mp4"
         ann_ = ann[item_["annotation"]]
         event_idx = events_to_idx[item_["keywords"]]
-
         instances.append((videoPath, ann_, event_idx))
 
     return instances
+
