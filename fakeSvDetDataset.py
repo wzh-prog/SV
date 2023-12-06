@@ -12,7 +12,7 @@ import random
 class FKSV(VisionDataset):
     def __init__(
         self,
-        root: str,
+        root: str, # video
         jsonFile: str,
         frames_per_clip: int,
 
@@ -57,7 +57,8 @@ class FKSV(VisionDataset):
         # video clips
         self.full_video_clips = video_clips
         self.train = train
-        self.indices = random.sample(list(a for a in range(len(self.samples))), 50)
+        # self.indices = random.sample(list(a for a in range(len(self.samples))), 5)
+        self.indices = list(a for a in range(len(self.samples)))
         self.video_clips = video_clips.subset(self.indices)
         self.transform = transform
         self.events = events
@@ -115,11 +116,11 @@ def get_samples(
 
     instances = []
     
-    # ann = {"假": 0, "真": 1, "辟谣": 2}
-    ann = {1: 0, 2: 1, 0: 2}
+    ann = {"假": 0, "真": 1, "辟谣": 2}
+    # ann = {1: 0, 2: 1, 0: 2}
 
     for item_ in data:
-        videoPath = item_["video_id"]
+        videoPath = item_["video_id"] + ".mp4"
         ann_ = ann[item_["annotation"]]
         event_idx = events_to_idx[item_["keywords"]]
 
