@@ -8,6 +8,7 @@ from  torchvision.datasets.folder import find_classes, make_dataset
 from torchvision.datasets.video_utils import VideoClips
 from torchvision.datasets.vision import VisionDataset
 import random
+from torch.nn import AdaptiveAvgPool1d
 
 class FKSV(VisionDataset):
     def __init__(
@@ -66,6 +67,7 @@ class FKSV(VisionDataset):
         self.video_clips = video_clips.subset(self.indices)
         self.transform = transform
         self.events = events
+        self.ada = AdaptiveAvgPool1d((16000))
 
     @property
     def metadata(self) -> Dict[str, Any]:
@@ -79,11 +81,14 @@ class FKSV(VisionDataset):
         sample_index = self.indices[video_idx]
         _, ann_, event_idx = self.samples[sample_index]
 
+        video = video.permute(0,3,1,2)
+
         if self.transform is not None:
             video = self.transform(video)
+        audio = self.ada(audio)
 
         # return video, audio, _av_info, ann_, event_idx, video_idx
-        return video, ann_, event_idx
+        return video, audio, ann_, event_idx
 
 import json
 def find_enents(jsonFile: str):
