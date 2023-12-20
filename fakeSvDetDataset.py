@@ -37,8 +37,7 @@ class FKSV(VisionDataset):
             events_to_idx
         )
 
-        self.samples = self.samples[:64]
-
+        # self.samples = self.samples[:50]
 
         video_paths = [os.path.join(self.root, path) for (path, _, _) in self.samples]
         print("total videos: ", len(video_paths))
@@ -81,7 +80,8 @@ class FKSV(VisionDataset):
         if self.transform is not None:
             video = self.transform(video)
 
-        return video, audio, _av_info, ann_, event_idx
+        # return video, audio, _av_info, ann_, event_idx
+        return video,  ann_, event_idx
 
 import json
 def find_enents(jsonFile: str):
