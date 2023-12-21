@@ -79,7 +79,6 @@ class FKSV(VisionDataset):
 
         if self.transform is not None:
             video = self.transform(video)
-
         # return video, audio, _av_info, ann_, event_idx
         return video,  ann_, event_idx
 
