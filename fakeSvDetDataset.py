@@ -8,6 +8,7 @@ from  torchvision.datasets.folder import find_classes, make_dataset
 from torchvision.datasets.video_utils import VideoClips
 from torchvision.datasets.vision import VisionDataset
 import random
+from torch.nn import AdaptiveAvgPool1d
 
 class FKSV(VisionDataset):
     def __init__(
@@ -21,7 +22,7 @@ class FKSV(VisionDataset):
         train: bool = True,
         transform: Optional[Callable] = None,
         _precomputed_metadata: Optional[Dict[str, Any]] = None,
-        num_workers: int = 1,
+        num_workers: int = 4,
         _video_width: int = 0,
         _video_height: int = 0,
         _video_min_dimension: int = 0,
@@ -29,7 +30,7 @@ class FKSV(VisionDataset):
         output_format: str = "THWC",
     ) -> None:
         super().__init__(root)
-
+        
         events, events_to_idx = find_enents(jsonFile)
 
         self.samples = get_samples(
@@ -37,7 +38,12 @@ class FKSV(VisionDataset):
             events_to_idx
         )
 
+<<<<<<< HEAD
         # self.samples = self.samples[:50]
+=======
+        self.samples = self.samples
+
+>>>>>>> refs/remotes/origin/feature_cc
 
         video_paths = [os.path.join(self.root, path) for (path, _, _) in self.samples]
         print("total videos: ", len(video_paths))
@@ -54,6 +60,7 @@ class FKSV(VisionDataset):
             _audio_samples=_audio_samples,
             output_format=output_format,
         )
+        # print(video_clips.clips)
         # we bookkeep the full version of video clips because we want to be able
         # to return the metadata of full version rather than the subset version of
         # video clips
@@ -64,6 +71,7 @@ class FKSV(VisionDataset):
         self.video_clips = video_clips.subset(self.indices)
         self.transform = transform
         self.events = events
+        self.ada = AdaptiveAvgPool1d((16000))
 
     @property
     def metadata(self) -> Dict[str, Any]:
@@ -77,15 +85,24 @@ class FKSV(VisionDataset):
         sample_index = self.indices[video_idx]
         _, ann_, event_idx = self.samples[sample_index]
 
+        video = video.permute(0,3,1,2)
+
         if self.transform is not None:
             video = self.transform(video)
+<<<<<<< HEAD
         # return video, audio, _av_info, ann_, event_idx
         return video,  ann_, event_idx
+=======
+        audio = self.ada(audio)
+
+        # return video, audio, _av_info, ann_, event_idx, video_idx
+        return video, audio, ann_, event_idx
+>>>>>>> refs/remotes/origin/feature_cc
 
 import json
 def find_enents(jsonFile: str):
     # Opening JSON file
-    f = open(jsonFile)
+    f = open(jsonFile, encoding="utf-8")
     # returns JSON object as 
     # a dictionary
     data = json.load(f)
@@ -111,7 +128,7 @@ def get_samples(
     events_to_idx: Optional[Dict[str, int]] = None,
 ) -> List[Tuple[str, int]]:
     # Opening JSON file
-    f = open(jsonFile)
+    f = open(jsonFile, encoding="utf-8")
     # returns JSON object as 
     # a dictionary
     data = json.load(f)
